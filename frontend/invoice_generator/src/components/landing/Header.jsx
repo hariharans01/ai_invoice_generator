@@ -10,7 +10,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isAuthenticated = true
-  const user = {name:'Alex', email:'alex@timetoprogram.com'}
+  const user = {name:'Hari', email:'harigokuljr11@gmail.com'}
   const logout = ()=>{}
   const navigate = useNavigate()
 
