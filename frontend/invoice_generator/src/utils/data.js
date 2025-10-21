@@ -25,4 +25,38 @@ export const FEATURES = [
         description:
             "easily manage all your invoices, track payments, and send reminders for overdue payments." ,
     },
+];
+
+export const TESTIMONIALS = [
+    {
+        quote: "I can able to send invoices in minutes !!",
+        author: "Hariharan" ,
+        title: "Business owner",
+        avatar: "https://placehold.co/100x100/000000/ffffff?text=H"
+    },
+    {
+        quote: "I can able to send invoices in minutes !!",
+        author: "Hariharan" ,
+        title: "Business owner",
+        avatar: "https://placehold.co/100x100/000000/ffffff?text=H"
+    },
+    {
+        quote: "I can able to send invoices in minutes !!",
+        author: "Hariharan" ,
+        title: "Business owner",
+        avatar: "https://placehold.co/100x100/000000/ffffff?text=H"
+    }
+];
+
+export const FAQS = [
+    {
+        question: "How does the AI invoice creation work?",
+        answer: "Simply paste any text that contains invoice details-like an email"
+    },
+
+    {
+        question:"How does billing work?",
+        answer:"Plans are per workspace, not per account."
+    }
+
 ]
