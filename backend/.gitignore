@@ -1,0 +1,7 @@
+# Dependencies
+/node_modules
+# For backend projects where node_modules is inside a 'backend' folder:
+/backend/node_modules
+# Logs and temporary files
+npm-debug.log
+.DS_Store
