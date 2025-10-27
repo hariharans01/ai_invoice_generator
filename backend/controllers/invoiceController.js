@@ -56,6 +56,8 @@ exports.createInvoice = async(req,res) =>{
 //@access private
 exports.getInvoices = async(req,res) => {
      try{
+        const invoices = await Invoice.find().populate("user","name email");
+        res.json(invoices);
 
     } catch(error) {
         res
@@ -69,7 +71,9 @@ exports.getInvoices = async(req,res) => {
 //@access private
 exports.getInvoiceById =  async(req,res)=>{
      try{
-
+        const invoice = await Invoice.findById(req.params.id).populate("user","name email");
+        if (!invoice) return res.status(404).json({message:"Ivoice not found"});
+        res.json(invoice); 
     } catch(error) {
         res
         .status(500)
@@ -82,8 +86,50 @@ exports.getInvoiceById =  async(req,res)=>{
 //@access private
 exports.updateInvoice =  async(req,res)=>{
      try{
+        const{
+            invoiceNumber,
+            invoiceDate,
+            dueDate,
+            billFrom,
+            billTo,
+            items,
+            notes,
+            paymentTerms,
+            status,
+        } = req.body;
 
-    } catch(error) {
+        //recalculate totals if items changes
+        let subtotal = 0;
+        let taxTotal = 0;
+        if(items && items.length>0){
+            items.forEach((item)=>{
+                subtotal += item.unitPrice * item.quantity;
+                taxTotal += ((item.unitPrice * item.quantity) * (item.taxPercent || 0))/100;
+            });
+        } 
+        const total = subtotal + taxTotal;
+        const updatedIvoice = await Invoice.findByIdAndUpdate(
+            req.params.id,
+            {
+                invoiceNumber,
+                invoiceDate,
+                dueDate,
+                billFrom,
+                billTo,
+                items,
+                notes,
+                paymentTerms,
+                status,
+                subtotal,
+                taxTotal,
+                total,
+            },
+            { new: true }
+        );
+
+        if(!updatedIvoice) return res.status(404).json({message:"Invoice not found"});
+    }
+    catch(error) {
         res
         .status(500)
         .json({message: "Error updating invoice", error:error.message});
@@ -95,7 +141,9 @@ exports.updateInvoice =  async(req,res)=>{
 //@access private
 exports.deleteInvoice =  async(req,res)=>{
      try{
-
+        const invoice = await Invoice.findByIdAndDelete(req.params.id);
+        if(!invoice) return res.status(404).json({message:"Invoice not found"});
+        res.json({message:"Invoice deleted successfully"});
     } catch(error) {
         res
         .status(500)
