@@ -6,6 +6,7 @@ const{
     updateInvoice,
     deleteInvoice,
 } = require("../controllers/invoiceController.js");
+
 const { protect } = require("../middlewares/authMiddleware.js");
 
 const router = express.Router();
