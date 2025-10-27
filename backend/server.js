@@ -27,8 +27,8 @@ app.use(express.json());
 
 //Routes
 app.use("/api/auth", authRoutes);
-//app.use("/api/invoices", invoiceRoutes);
-//app.use("/api/ai", aiRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/ai", aiRoutes);
 
 //start server
 const PORT = process.env.PORT || 8000;
