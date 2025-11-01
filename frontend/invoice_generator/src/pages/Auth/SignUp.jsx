@@ -181,7 +181,7 @@ const SignUp = () => {
         }
       );
       const data = response.data;
-      const{ token,user } = data;
+      const{ token } = data;
 
       if(response.status === 201) {
         setSuccess("Account created successfully");
@@ -202,7 +202,7 @@ const SignUp = () => {
         });
 
         //login the user immediately after successful registration
-        login(user, token);
+        login(data, token);
         navigate("/dashboard");
       }
 
