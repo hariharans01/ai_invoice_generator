@@ -25,7 +25,7 @@ const SignUp = () => {
     name:"",
     email:"",
     password:"",
-    confirmedPassword:"",
+    confirmPassword:"",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -37,28 +37,186 @@ const SignUp = () => {
     name: "",
     email: "",
     password: "",
-    confirmedPassword: "",
+    confirmPassword: "",
   });
 
   const [touched,setTouched] = useState({
     name: false,
     email: false,
     password: false,
-    confirmedPassword: false,
+    confirmPassword: false,
   });
 
   //validation functions
-  const validateName = (name) => {};
+  const validateName = (name) => {
+    if (!name) return "Name is required";
+    if (name.length < 2) return "Name must be at 2 characters";
+    if (name.length > 50) return "Name must be less than 50 characters";
+    return "";
+  };
 
-  const validateConfirmPassword = (confirmPassword, password) => {};
+  const validateConfirmPassword = (confirmPassword, password) => {
+    if(!confirmPassword) return "please confirm your password";
+    if(confirmPassword !== password) return "Passwords do not match";
+    return "";
+  };
 
-  const handleInputChange = (e) => {};
+  const handleInputChange = (e) => {
+    const {name,value} = e.target;
+    setFormData((prev)=>({
+      ...prev,
+      [name]:value,
+    }));
 
-  const handleBlur = (e) => {};
+    //real-time validation
+    if (touched[name]){
+      const newFieldErrors = {...fieldErrors};
+      if (name==='name'){
+        newFieldErrors.name = validateName(value);
+      } else if (name === "email") {
+        newFieldErrors.email = validateEmail(value);
+      } else if(name === "password") {
+        newFieldErrors.password = validatePassword(value);
+        //also revalidate confirm password if its touched
+        if(touched.confirmPassword) {
+          newFieldErrors.confirmPassword = validateConfirmPassword(
+            formData.confirmPassword,
+            value
+          );
+        }
+      } else if(name === 'confirmPassword'){
+        newFieldErrors.confirmPassword = validateConfirmPassword(
+          value,
+          formData.password
+        );
+      }
+      setFieldErrors(newFieldErrors);
+    }
 
-  const isFormValid = () => {};
+    if(error) setError("");
+  };
 
-  const handleSubmit = async () => {};
+  const handleBlur = (e) => {
+    const {name} = e.target;
+    setTouched(prev=> ({
+      ...prev,
+      [name]: true,
+    }))
+
+    //validate on blur
+    const newFieldErrors = {...fieldErrors};
+    if (name === "name") {
+      newFieldErrors.name = validateName(formData.name);
+    } else if(name==="email") {
+      newFieldErrors.email = validateEmail(formData.email);
+    } else if (name==="password") {
+      newFieldErrors.password = validatePassword(formData.password);
+    } else if (name === "confirmPassword") {
+      newFieldErrors.confirmPassword = validateConfirmPassword(
+        formData.confirmPassword,
+        formData.password
+      );
+    }
+    setFieldErrors(newFieldErrors);
+  };
+
+  const isFormValid = () => {
+    const nameError = validateName(formData.name);
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+    const confirmPasswordError = validateConfirmPassword(
+      formData.confirmPassword,
+      formData.password
+    );
+
+    return(
+      !nameError &&
+      !emailError &&
+      !passwordError &&
+      !confirmPasswordError &&
+      formData.name &&
+      formData.email &&
+      formData.password &&
+      formData.confirmPassword
+    );
+  };
+
+  const handleSubmit = async () => {
+    //validate all feilds before submission
+    const nameError = validateName(formData.name);
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+    const confirmPasswordError = validateConfirmPassword(
+      formData.confirmPassword,
+      formData.password
+    );
+
+    if (nameError || emailError || passwordError || confirmPasswordError) {
+      setFieldErrors({
+        name: nameError,
+        email: emailError,
+        password: passwordError,
+        confirmPassword: confirmPasswordError,
+      });
+      setTouched ({
+        name: true,
+        email: true,
+        password: true,
+        confirmPassword: true,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+
+    try{
+      const response = await axiosInstance.post(
+        API_PATHS.AUTH.REGISTER,
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+      const data = response.data;
+      const{ token,user } = data;
+
+      if(response.status === 201) {
+        setSuccess("Account created successfully");
+         
+        //reset form
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+
+        setTouched({
+          name: false,
+          email: false,
+          password: false,
+          confirmPassword: false,
+        });
+
+        //login the user immediately after successful registration
+        login(user, token);
+        navigate("/dashboard");
+      }
+
+    } catch (err) {
+      if(err.response && err.response.data && err.response.data.message){
+        setError(err.response.data.message);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+      console.error("API error:", err.response || err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   return (
@@ -87,7 +245,7 @@ const SignUp = () => {
               <User className='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
               <input
                 name="name"
-                type="type"
+                type="text"
                 required
                 value={formData.name}
                 onChange = {handleInputChange}
@@ -145,10 +303,10 @@ const SignUp = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   onBlur={handleBlur}
-                  className={`w-full pl-12 pr-12 py-3 border rounded-lg focus:border-transparent outline-none transition-all ${
+                  className={`w-full pl-12 pr-12 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
                     fieldErrors.password && touched.password
-                      ?"border-red-300 focus:ring-red-500"
-                      :"border-gray-300 focus:ring-black"
+                      ? "border-red-300 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-black"
                   }`}
                   placeholder='Create a password'
                 />
@@ -206,7 +364,7 @@ const SignUp = () => {
               </div>
               {fieldErrors.confirmPassword && touched.confirmPassword && (
                 <p className='mt-1 text-sm text-red-600'>
-                  {fieldErrors.confirmedPassword}
+                  {fieldErrors.confirmPassword}
                 </p>
               )}
             </div>
@@ -221,7 +379,7 @@ const SignUp = () => {
             }
             {
               success && (
-                <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+                <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
                   <p className='text-green-600 text-sm'>{success}</p>
                 </div>
               )
@@ -235,7 +393,7 @@ const SignUp = () => {
                 className='w-4 h-4 text-black border-gray-300 rounded  focus:ring-black mt-1'
                 required
               />
-              <label htmlFor='terms' className=''>
+              <label htmlFor='terms' className='ml-2 text-sm text-gray-600'>
                 I agree to the{" "}
                 <button className='text-black hover:underline'>
                   Terms of Service
@@ -255,24 +413,24 @@ const SignUp = () => {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className='w-4 h-w mr-2 animate-spin'/>
+                  <Loader2 className='w-4 h-4 mr-2 animate-spin'/>
                   Creating account...
                 </>
               ):(
                 <>
                   Create Account
-                  <ArrowRight className='w-4 h-4 ml-2 group-hover:translate-x-l'/>
+                  <ArrowRight className='w-4 h-4 ml-2 group-hover:translate-x-1'/>
                 </>
               )}        
             </button>
         </div>
 
         {/*footer*/} 
-        <div className=''>
-              <p className=''>
+        <div className='mt-6 pt-4 border-t border-gray-200 text-center'>
+              <p className='text-sm text-gray-600'>
                 Already have an account?{" "}
                 <button 
-                  className=''
+                  className='text-black font-medium hover:underline'
                   onClick={()=> navigate("/login")}
                 >
                   Sign in
