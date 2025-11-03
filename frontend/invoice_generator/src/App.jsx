@@ -8,11 +8,11 @@ import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import SignUp from "./pages/Auth/SignUp";
 import Login from "./pages/Auth/Login";
-import Dashboard from "./pages/Dashboard/dashboard";
-import Allinvoice from "./pages/Allinvoice/allinvoice";
-import Createinvoice from "./pages/Allinvoice/createinvoice";
-import InvoiceDetails from "./pages/Allinvoice/invoiceDetails";
-import Profilepage from "./pages/profile/profilepage";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Allinvoice from "./pages/Allinvoice/Allinvoice";
+import Createinvoice from "./pages/Allinvoice/Createinvoice";
+import InvoiceDetails from "./pages/Allinvoice/InvoiceDetails";
+import Profilepage from "./pages/profile/Profilepage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContex";
 

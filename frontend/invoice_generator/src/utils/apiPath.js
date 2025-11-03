@@ -10,8 +10,8 @@ export const API_PATHS = {
 
     INVOICE:{
         CREATE: "/api/invoices",
-        Get_ALL_INVOICES: "/api/invoices/",
-        GET_INVOICE_BY_ID: (id) => `api/invoices/${id}`,
+        GET_ALL_INVOICES: "/api/invoices",
+        GET_INVOICE_BY_ID: (id) => `/api/invoices/${id}`,
         UPDATE_INVOICE: (id)=> `/api/invoices/${id}`,
         DELETE_INVOICE: (id)=> `/api/invoices/${id}`,
     },

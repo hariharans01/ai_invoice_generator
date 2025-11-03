@@ -1,10 +1,10 @@
 import { Navigate,Outlet } from 'react-router-dom'
-import DashboardLayout from '../layout/Dashboardlayout';
+import DashboardLayout from '../layout/DashboardLayout';
+import {useAuth} from "../../context/AuthContex"
 
 const ProtectedRoute = ({children}) => {
     //integrate later !!
-    const isAuthenticated = true;
-    const loading = false;
+    const { isAuthenticated, loading } = useAuth();
 
     if(loading){
         return <div>Loading...</div>;

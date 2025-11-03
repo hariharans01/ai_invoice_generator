@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContex";
 const Hero = () => {
-    const isAuthenticated = false;
-  return <section className="relative bg-[#fbfbfb] overflow-hidden">
+    const isAuthenticated = useAuth();
+
+  return(<section className="relative bg-[#fbfbfb] overflow-hidden">
     <div className="absolute insert-0 bg-grid-white/[0.05] bg-[size:60px_60px]"></div>
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div className="text-center max-w-4xl mx-auto">
@@ -28,6 +30,7 @@ const Hero = () => {
             </div>
         </div>
 </section>
+)
   
 }
 

@@ -25,7 +25,7 @@ export const AuthProvider = ({children}) => {
             const userStr = localStorage.getItem('user');
 
             if(token&&userStr) {
-                const userData = JSON.parse(useStr);
+                const userData = JSON.parse(userStr);
                 setUser(userData);
                 setIsAuthenticated(true);
             }            
@@ -56,7 +56,7 @@ export const AuthProvider = ({children}) => {
     };
 
     const updateUser = (updateUserData) => {
-        const newUserData = {...user, ...updatedUserData};
+        const newUserData = {...user, ...updateUserData};
         localStorage.setItem('user',JSON.stringify(newUserData));
         setUser(newUserData);
     };
