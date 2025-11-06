@@ -75,7 +75,7 @@ exports.getInvoiceById =  async(req,res)=>{
         if (!invoice) return res.status(404).json({message:"Invoice not found"});
         
         //check if the invoice belongs to the user
-        if (invoice.user.toString() !== req.user.id){
+        if (invoice.user._id.toString() !== req.user.id){
             return res.status(401).json({message:"Not authorized"});
         }
 
@@ -115,7 +115,7 @@ exports.updateInvoice =  async(req,res)=>{
             });
         } 
         const total = subtotal + taxTotal;
-        const updatedIvoice = await Invoice.findByIdAndUpdate(
+        const updatedInvoice = await Invoice.findByIdAndUpdate(
             req.params.id,
             {
                 invoiceNumber,
@@ -134,7 +134,8 @@ exports.updateInvoice =  async(req,res)=>{
             { new: true }
         );
 
-        if(!updatedIvoice) return res.status(404).json({message:"Invoice not found"});
+        if(!updatedInvoice) return res.status(404).json({message:"Invoice not found"});
+        res.json(updatedInvoice)
     }
     catch(error) {
         res
